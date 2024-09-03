@@ -1,0 +1,32 @@
+$date
+	Sun Jul 21 14:47:52 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb_alu $end
+$var wire 8 ! R [7:0] $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+b10100101 !
+$end
+#100
+b101111 !
+#200
+b10010101 !
+#300
+b11010101 !
+#400
+b10000100 !
+#500
+b101010 !
+#600
+b1111011 !
+#700
+b1010001 !
+#800
