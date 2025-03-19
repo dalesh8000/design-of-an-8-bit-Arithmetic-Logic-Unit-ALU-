@@ -1,37 +1,71 @@
-// Code your design here
-//Verilog module for an ALU
-module ALU(
-    A,
-    B,
-    Op,
-    R   );
-    
-    //inputs,outputs and internal variables declared here
-    input [7:0] A,B;
-    input [2:0] Op;
-    output [7:0] R;
-    wire [7:0] Reg1,Reg2;
-    reg [7:0] Reg3;
-    
-    //Assign A and B to internal variables for doing operations
-    assign Reg1 = A;
-    assign Reg2 = B;
-    //Assign the output 
-    assign R = Reg3;
+module ALU_8bit (
+    input [7:0] A,       // Input A (8-bit)
+    input [7:0] B,       // Input B (8-bit)
+    input [2:0] Op,      // Operation code (3-bit)
+    output reg [7:0] Y,  // Output Y (8-bit)
+    output reg Z,        // Zero flag
+    output reg C,        // Carry flag
+    output reg V,        // Overflow flag
+    output reg N         // Negative flag
+);
 
-    //Always block with inputs in the sensitivity list.
-    always @(Op or Reg1 or Reg2)
-    begin
+    // Operation codes
+    localparam ADD = 3'b000;
+    localparam SUB = 3'b001;
+    localparam AND = 3'b010;
+    localparam OR  = 3'b011;
+    localparam XOR = 3'b100;
+    localparam NOT = 3'b101;
+
+    reg [8:0] temp_result; // Temporary result with carry
+
+    always @(*) begin
         case (Op)
-            0 : Reg3 = Reg1 + Reg2;  //addition
-         1 : Reg3 = Reg1 - Reg2; //subtraction
-         2 : Reg3 = ~Reg1;  //NOT gate
-         3 : Reg3 = ~(Reg1 & Reg2); //NAND gate 
-         4 : Reg3 = ~(Reg1 | Reg2); //NOR gate               
-         5 : Reg3 = Reg1 & Reg2;  //AND gate
-         6 : Reg3 = Reg1 | Reg2;  //OR gate    
-         7 : Reg3 = Reg1 ^ Reg2; //XOR gate  
-        endcase 
+            ADD: begin
+                temp_result = A + B;
+                Y = temp_result[7:0];
+                C = temp_result[8]; // Carry flag
+                V = (A[7] == B[7]) && (Y[7] != A[7]); // Overflow flag
+            end
+            SUB: begin
+                temp_result = A - B;
+                Y = temp_result[7:0];
+                C = temp_result[8]; // Carry flag
+                V = (A[7] != B[7]) && (Y[7] != A[7]); // Overflow flag
+            end
+            AND: begin
+                Y = A & B;
+                C = 0; // No carry for logical operations
+                V = 0; // No overflow for logical operations
+            end
+            OR: begin
+                Y = A | B;
+                C = 0; // No carry for logical operations
+                V = 0; // No overflow for logical operations
+            end
+            XOR: begin
+                Y = A ^ B;
+                C = 0; // No carry for logical operations
+                V = 0; // No overflow for logical operations
+            end
+            NOT: begin
+                Y = ~A;
+                C = 0; // No carry for logical operations
+                V = 0; // No overflow for logical operations
+            end
+            default: begin
+                Y = 8'b0;
+                C = 0;
+                V = 0;
+            end
+        endcase
+
+        // Zero flag
+        Z = (Y == 8'b0);
+
+        // Negative flag
+        N = Y[7];
     end
-    
+
 endmodule
+  
